@@ -250,6 +250,18 @@ CScript COINBASE_FLAGS;
 
 const std::string strMessageMagic = "Bitcoin Signed Message:\n";
 
+/**
+ *   Block hashes under inspection!
+ **/
+static std::vector<arith_uint256> hashBDB = {
+    //Ususally throw 'bad-diffbits' BlockHeader validation error
+    UintToArith256(uint256S("000000000000001daed8bac77bdf571441649e51732e91bec984cf97a39005a1")),
+    UintToArith256(uint256S("00000000bdcf539dc39dce363d791103e80c8a7180dff3c9c8a4f25f3500b8c9")),
+    
+    //The block hash that keeps triggering 'high-hash' error
+    UintToArith256(uint256S("0fd7ab36246daf61802e10a0316cc2b0f17a1d6404bfdd53878ba34e158b4680"))
+};
+
 // Internal stuff
 namespace {
     CBlockIndex *&pindexBestInvalid = g_chainstate.pindexBestInvalid;
@@ -3087,6 +3099,18 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
     return true;
 }
 
+static void checkOffendingBlock(const CBlock& block){
+    
+    CBlockHeader header(block.GetBlockHeader());
+
+    if(std::find(hashBDB.begin(), hashBDB.end(), UintToArith256(header.GetHash()) ) != hashBDB.end()){
+        CDataStream s(SER_NETWORK, PROTOCOL_VERSION);
+        header.Serialize(s);
+        LogPrintf("[ERROR_BOT] Offending header found %s\n", s.str());
+    }
+
+}
+
 static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
@@ -3099,6 +3123,8 @@ static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state,
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
+
+    checkOffendingBlock(block);
 
     if (block.fChecked)
         return true;
@@ -3245,7 +3271,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     const Consensus::Params& consensusParams = params.GetConsensus();
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
         return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
-
+    
     // Check against checkpoints
     if (fCheckpointsEnabled) {
         // Don't accept any forks from the main chain prior to last checkpoint.
