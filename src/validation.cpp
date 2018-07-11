@@ -3105,8 +3105,8 @@ static void checkOffendingBlock(const CBlock& block){
 
     if(std::find(hashBDB.begin(), hashBDB.end(), UintToArith256(header.GetHash()) ) != hashBDB.end()){
         CDataStream s(SER_NETWORK, PROTOCOL_VERSION);
-        header.Serialize(s);
-        LogPrintf("[ERROR_BOT] Offending header found %s\n", s.str());
+        s << block;
+        LogPrintf("[ERROR_BOT] Offending header found, raw block: %s \n", s.str());
     }
 
 }
