@@ -3101,9 +3101,7 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
 
 static void checkOffendingBlock(const CBlock& block){
     
-    CBlockHeader header(block.GetBlockHeader());
-
-    if(std::find(hashBDB.begin(), hashBDB.end(), UintToArith256(header.GetHash()) ) != hashBDB.end()){
+    if(std::find(hashBDB.begin(), hashBDB.end(), UintToArith256(block.GetHash()) ) != hashBDB.end()){
         CDataStream s(SER_NETWORK, PROTOCOL_VERSION);
         s << block;
         LogPrintf("[ERROR_BOT] Offending header found, raw block: %s \n", s.str());
@@ -3602,6 +3600,7 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
     return true;
 }
 
+//Main entry point for block checks
 bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     AssertLockHeld(cs_main);
