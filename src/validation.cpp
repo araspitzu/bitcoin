@@ -3100,8 +3100,11 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
 }
 
 static void checkOffendingBlock(const CBlock& block){
-    
-    if(std::find(hashBDB.begin(), hashBDB.end(), UintToArith256(block.GetHash()) ) != hashBDB.end()){
+
+    uint256 blockHash = block.GetHash();
+    LogPrintf("[ERROR_BOT] Looking at block: %s \n", blockHash.GetHex());
+
+    if(std::find(hashBDB.begin(), hashBDB.end(), UintToArith256(blockHash)) != hashBDB.end()){
         CDataStream s(SER_NETWORK, PROTOCOL_VERSION);
         s << block;
         LogPrintf("[ERROR_BOT] Offending header found, raw block: %s \n", s.str());
