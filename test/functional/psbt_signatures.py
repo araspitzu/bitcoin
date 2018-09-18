@@ -84,7 +84,9 @@ class PSBTSignatureTest(BitcoinTestFramework):
         decoded = node1.decoderawtransaction(signed_raw_tx["hex"])
         script_sig = decoded["vin"][0]["scriptSig"]["hex"]
 
-        assert script_sig == ""
+        print(script_sig)
+
+        assert script_sig == "00473044022021648b4e1a1a2e0f57c1a376cda933f45b4c4a39e19b5d98313d22223e2c8d5f0220508bc46b5b0b967d67957cede9e418d68b8a835fdf5ca10cf622ab431eed652201483045022100c02abac802292e3c68ccbd08d4f12ac2f2a9f23337aa7b2d584698e5952817f4022054f6dbb01119be29b7afec1689d89bc88bd349e4a65e9f835141694ed98f823201475221029583bf39ae0a609747ad199addd634fa6108559d6c5cd39b4c2183f1ab96e07f2102dab61ff49a14db6a7d02b0cd1fbb78fc4b18312b5b4e54dae4dba2fbfef536d752ae"
 
         '''
         #PSBT test
