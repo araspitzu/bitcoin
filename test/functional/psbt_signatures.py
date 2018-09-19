@@ -71,11 +71,11 @@ class PSBTSignatureTest(BitcoinTestFramework):
         
         #extract the produced script_sig and compare it with the expected one (from bitcoin-lib)
         decoded = node1.decoderawtransaction(signed_raw_tx["hex"])
-        script_sig = decoded["vin"][0]["scriptSig"]["hex"]
+        script_sig = decoded["vin"][0]["scriptSig"]
 
-        print("SCRIPT_SIG: "+str(script_sig))
+        print("\nSCRIPT_SIG: "+str(script_sig["asm"]))
 
-        assert script_sig == bitcoin_lib_script_sig
+        assert script_sig["hex"] == bitcoin_lib_script_sig
 
         '''
         #PSBT test
