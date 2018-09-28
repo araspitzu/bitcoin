@@ -57,6 +57,9 @@ class RegtestSignatureTest(BitcoinTestFramework):
         #create a transaction that spends the p2sh output - sends the fund to hardcoded 2Mx1vp4fnSeHEbWopkGvgjpDittT3Vt4uvQ
         raw_tx = bitcoind.createrawtransaction([{"txid": funding_txid, "vout": p2sh_out_index}], [{"2Mx1vp4fnSeHEbWopkGvgjpDittT3Vt4uvQ": p2sh_value}])
 
+        tx_hash = bitcoind.decoderawtransaction(raw_tx)["txid"]
+
+        assert tx_hash == "aa3c0b069e8a8571e2417cfe1140f2d8040f85d12b10ac01b4dcd29e6120bf11"
         #print("RAW_TX:"+str(raw_tx))
 
         #now sign it! 
